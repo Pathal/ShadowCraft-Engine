@@ -1,4 +1,4 @@
-import copy
+from copy import deepcopy
 import gettext
 import __builtin__
 import math
@@ -50,7 +50,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         #initialize variables into a table that won't disappear throughout the calculations
         #additionally, set up data structures (like combo points)
         class_table = {}
-        class_table['current_second_power'] = 0 #combot points
+        class_table['current_second_power'] = 0 #combo points
         class_table['max_second_power'] = 5 #can only get to 5 CP (for now?)
         
         class_table['max_power'] = 100 #energy
@@ -111,24 +111,60 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
     def combat_dps_breakdown(self):
         print 'Calculating Combat Breakdown...'
         breakdown = {}
+        total_damage = 0
         event_queue = []
+        time = 0
         #determine pre-fight sequence, establish baseline event_queue and auras
         #read priority list, determine first action
         #load event_state object with event_queue
-        event_queue = [(0.0, 'mh_autoattack'), (0.01, 'oh_autoattack')] #temporary for development purposes
+        #              (time, name, multistrike)
+        event_queue = [(0.0, 'mh_autoattack', False), (0.01, 'oh_autoattack', False)] #temporary for development purposes
         #self.combat_priority_list() #should determine opener, as well as handle normal rotational decisions
-        root_event = mh_attack.MHAttack(self, breakdown, 0, event_queue, 0, self.state_values) #timer always starts at 0, prefight has no bearing
-        root_event.calculate_breakdown()
+        first_event = event_queue.pop(0)
+        current_node = self.get_next_attack(first_event[1])(self, deepcopy(breakdown), deepcopy(time), deepcopy(event_queue),
+                                                            deepcopy(total_damage), deepcopy(self.state_values), None)
+        
+        l=0
+        while True:
+            print l
+            l += 1
+            current_node.try_to_populate()
+            
+            if current_node.has_next_child():
+                print "children: "
+                for e in current_node.children:
+                    print " ", e._name 
+                print "going from ", current_node._name
+                current_node = current_node.get_next_child()
+                print "        to ", current_node._name, current_node.current_child
+            else:
+                print "Reached bottom!"
+                #else return breakdown average to parent
+                if current_node.parent == None:
+                    #this means we're at the root node, lets split this joint!
+                    print "And we're done!"
+                    return current_node.final_breakdown
+                current_node.send_data_to_parent()
+
+                p = current_node.parent
+                current_node = None #kill the data to clean up memory
+                current_node = p
+
         return breakdown
-    def combat_priority_list(self, cost):
+    
+    def combat_priority_list(self):
         action = 'wait'
-        if self.state_values['current_energy'] > cost and self.state_values['combo_points'] < self.state_values['max_second_power']:
+        if self.state_values['current_energy'] > 50 and self.state_values['combo_points'] < self.state_values['max_second_power']:
             action = 'sinister_strike'
-        if self.state_values['current_energy'] > cost and self.state_values['combo_points'] == self.state_values['max_second_power']:
+        if self.state_values['current_energy'] > 35 and self.state_values['combo_points'] == self.state_values['max_second_power']:
             action = 'eviscerate'
         if self.state_values:
             return
         return action
+    
+    def get_breakdown(self, queue):
+        breakdown = {}
+        return
     
     def subtlety_dps_estimate(self):
         return sum(self.subtlety_dps_breakdown().values())
@@ -137,26 +173,4 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         #read priority list, determine first action
         #load event_state object with event_queue
         return {'none':1.}
-    
-    def reset_bandits_guile(self):
-        self.state_values['bg_counter'] = 0
-        self.state_values['damage_multiplier'] *= 1.0 / 1.5 #BG30 is now 50%
-    
-    def set_bandits_guile_level(self):
-        c = self.state_values['bg_counter']
-        level = math.min(c // 4, 3) #BG30/50 is highest level
-        if level == 3:
-            self.state_values['damage_multiplier'] *= 1.5 / 1.2 #would be 1.3/1.2 if under level 100
-        else:
-            self.state_values['damage_multiplier'] *= (1 + .1 * level) / (1 + .1 * (level-1))
-            
-    def restless_blades_impact(self, cp):
-        self.state_values['cooldown']['killing_spree'] -= 2 * cp
-        self.state_values['cooldown']['adrenaline_rush'] -= 2 * cp
-    
-    def set_sanguinary_veins(self, enabled=True):
-        if enabled:
-            self.state_values['damage_multiplier'] *= 1.2
-        else:
-            self.state_values['damage_multiplier'] *= 1.0/1.2
     

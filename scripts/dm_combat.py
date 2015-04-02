@@ -26,8 +26,8 @@ i18n.set_language(test_language)
 start = time.time()
 
 # Set up level/class/race
-test_level = 90
-test_race = race.Race('pandaren')
+test_level = 100
+test_race = race.Race('blood_elf')
 test_class = 'rogue'
 
 # Set up buffs.
@@ -38,31 +38,38 @@ test_buffs = buffs.Buffs(
         'mastery_buff',
         'haste_buff',
         'multistrike_buff',
+        'versatility_buff',
         'attack_power_buff',
-        'armor_debuff',
         'physical_vulnerability_debuff',
         'spell_damage_debuff',
+        'flask_wod_agi',
+        'food_mop_agi'
     )
 
 # Set up weapons.
-test_mh = stats.Weapon(571.0, 2.6, 'axe', 'dancing_steel')
-test_oh = stats.Weapon(571.0, 2.6, 'axe', 'dancing_steel')
+test_mh = stats.Weapon(410., 2.6, 'sword', 'dancing_steel')
+#test_mh = stats.Weapon(420.5, 1.8, 'dagger', 'mark_of_the_shattered_hand')
+test_oh = stats.Weapon(410., 2.6, 'sword', 'dancing_steel')
 
 # Set up procs.
-test_procs = procs.ProcsList(('assurance_of_consequence', 580), ('haromms_talisman', 580), 'legendary_capacitive_meta', 'fury_of_xuen')
+test_procs = procs.ProcsList(('assurance_of_consequence', 588), ('draenic_philosophers_stone', 620), 'virmens_bite', 'virmens_bite_prepot', 'archmages_incandescence') #trinkets, other things (legendary procs)
 
 # Set up gear buffs.
-test_gear_buffs = stats.GearBuffs('rogue_t16_2pc', 'rogue_t16_4pc', 'leather_specialization')
+test_gear_buffs = stats.GearBuffs('gear_specialization', 'rogue_t17_2pc', 'rogue_t17_4pc') #tier buffs located here
 
 # Set up a calcs object..
 test_stats = stats.Stats(test_mh, test_oh, test_procs, test_gear_buffs,
-                         agi=862,
-                         stam=1000,
-                         crit=87,
-                         haste=553,
-                         mastery=200,
-                         versatility=160,
-                         multistrike=120,)
+                         agi=3650,
+                         stam=2426,
+                         crit=1039,
+                         haste=1100,
+                         mastery=1015,
+                         readiness=0,
+                         versatility=122,
+                         multistrike=1034,)
+
+# Initialize talents..
+test_talents = talents.Talents('3111121', test_class, test_level)
 
 # Initialize talents..
 test_talents = talents.Talents('332213', test_class, test_level)

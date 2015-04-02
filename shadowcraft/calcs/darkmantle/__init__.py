@@ -39,10 +39,9 @@ class DarkmantleCalculator(object):
         self.state_values = {}
         self.state_values['damage_multiplier'] = 1.0
         self.state_values['gcd_size'] = 1.0
-        self.state_values['trinket_1'] = {'name':'null', 'last_proc_time': -600}
-        self.state_values['trinket_2'] = {'name':'null', 'last_proc_time': -600}
-        self.state_values['weapon_proc_1'] = {'name':'null', 'last_proc_time': -600}
-        self.state_values['weapon_proc_2'] = {'name':'null', 'last_proc_time': -600}
+        self.state_values['range'] = 4.0
+        self.state_values['stance'] = 0
+        self.state_values['player_state'] = 'normal' #normal, casting, 
         self.state_values['cooldown'] = {}
         self.state_values['stat_multipliers'] = {
             'primary':self.stats.gear_buffs.gear_specialization_multiplier(), #armor specialization
@@ -94,7 +93,7 @@ class DarkmantleCalculator(object):
         
     def end_calc_branch(self, current_time, total_damage_done):
         if self.settings.style == 'time' and current_time >= self.settings.limit:
-            print 'Stopping calculations at: ', current_time, ' seconds'
+            print 'Stopping calculations at: ', current_time, ' seconds', total_damage_done
             print '--------'
             return True
         if self.settings.style == 'health' and total_damage_done >= self.settings.limit:
@@ -102,19 +101,15 @@ class DarkmantleCalculator(object):
             print '--------'
             return True
         return False
-        
-    def shallow_copy_table(self, base):
-        #need a deep copy variant
-        table = {}
-        for key in base:
-            table[key] = base[key]
-        return table
     
-    def shallow_copy_array(self, base):
-        lst = []
-        for e in base:
-            lst.append(e)
-        return lst
+    def add_event_to_queue(self, event, queue):
+        if event[0] < queue[0][0]:
+            queue.insert(0, event)
+        if event[0] > queue[len(queue)][0]:
+            queue.append(event)
+        for i in xrange(len(queue)): #from 0 to len()-1
+            if queue[i][0] <= event[0] and event[0] < queue[i+1][0]:
+                queue.insert(i+1, event)
     
     def _class_bonus_crit(self):
         return 0 #should be overwritten by individual class modules if the crit rate needs to be shifted
