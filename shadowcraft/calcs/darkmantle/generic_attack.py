@@ -39,6 +39,7 @@ class GenericAttack(GenericEvent):
         return breakdown
     
     def try_to_populate(self):
+        print "timeline", self.timeline
         if self.engine.end_calc_branch(self.time, self.total_damage):
             print self.breakdown
             return

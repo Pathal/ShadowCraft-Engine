@@ -64,3 +64,11 @@ class GenericEvent(object):
                     self.current_child = i
                     return self.children[i]
         return None
+    
+    def kill_last_child(self):
+        if self.children is not None:
+            for i in xrange(0, len(self.children)):
+                if self.children[i] is not None:
+                    self.children[i] = None
+                    return
+    

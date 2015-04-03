@@ -128,6 +128,8 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         while True:
             print l
             l += 1
+            if l == 40:
+                return breakdown
             current_node.try_to_populate()
             
             if current_node.has_next_child():
@@ -147,7 +149,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
                 current_node.send_data_to_parent()
 
                 p = current_node.parent
-                current_node = None #kill the data to clean up memory
+                current_node.kill_last_child()
                 current_node = p
 
         return breakdown
