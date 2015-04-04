@@ -93,12 +93,12 @@ class DarkmantleCalculator(object):
         
     def end_calc_branch(self, current_time, total_damage_done):
         if self.settings.style == 'time' and current_time >= self.settings.limit:
-            print 'Stopping calculations at: ', current_time, ' seconds', total_damage_done
-            print '--------'
+            #print 'Fork ends at: ', current_time, ' seconds', total_damage_done
+            #print '--------'
             return True
         if self.settings.style == 'health' and total_damage_done >= self.settings.limit:
-            print 'Stopping calculations at: ', total_damage_done, ' damage'
-            print '--------'
+            #print 'Fork ends at: ', total_damage_done, ' damage', current_time
+            #print '--------'
             return True
         return False
     

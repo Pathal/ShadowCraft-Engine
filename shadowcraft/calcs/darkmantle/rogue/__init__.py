@@ -110,6 +110,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         return sum(self.combat_dps_breakdown().values())
     def combat_dps_breakdown(self):
         print 'Calculating Combat Breakdown...'
+        print ""
         breakdown = {}
         total_damage = 0
         event_queue = []
@@ -126,31 +127,25 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         
         l=0
         while True:
-            print l
             l += 1
-            if l == 40:
-                return breakdown
+            if l % 1000 == 0:
+                print "iteration ", l
             current_node.try_to_populate()
             
             if current_node.has_next_child():
-                print "children: "
-                for e in current_node.children:
-                    print " ", e._name 
-                print "going from ", current_node._name
                 current_node = current_node.get_next_child()
-                print "        to ", current_node._name, current_node.current_child
             else:
-                print "Reached bottom!"
                 #else return breakdown average to parent
                 if current_node.parent == None:
                     #this means we're at the root node, lets split this joint!
                     print "And we're done!"
+                    print " "
                     return current_node.final_breakdown
                 current_node.send_data_to_parent()
 
                 p = current_node.parent
-                current_node.kill_last_child()
                 current_node = p
+                current_node.kill_last_child()
 
         return breakdown
     

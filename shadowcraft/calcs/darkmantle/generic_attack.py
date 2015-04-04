@@ -39,9 +39,9 @@ class GenericAttack(GenericEvent):
         return breakdown
     
     def try_to_populate(self):
-        print "timeline", self.timeline
         if self.engine.end_calc_branch(self.time, self.total_damage):
-            print self.breakdown
+            return
+        if self.children != None:
             return
         #b0 = deepcopy(self.breakdown) #miss
         next_event = self.timeline[0]
@@ -52,16 +52,14 @@ class GenericAttack(GenericEvent):
         b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown)) #normal
         t1 = self.total_damage + d1
         o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self)
-        print "child1", self._name, d1
         
         d2 = self.calculate_damage() * 2 #TODO
         b2 = self.add_damage_to_breakdown(d2, deepcopy(self.breakdown)) #crit
         t2 = self.total_damage + d2
         o2 = self.engine.get_next_attack(next_event[1])(self.engine, b2, next_event[0], self.timeline, t2, self.state_values, self)
-        print "child2", self._name, d2
         
         self.children = [o1, o2]
-        self.probabilities = [.8, .2]
+        self.probabilities = [.8, .2] #the likelihood of the corrosponding child occuring
         
     
     def bonus_crit_rate(self):
