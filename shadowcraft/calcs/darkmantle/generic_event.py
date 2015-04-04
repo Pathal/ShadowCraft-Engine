@@ -31,11 +31,11 @@ class GenericEvent(object):
     
     def send_data_to_parent(self):
         prob = self.parent.probabilities[self.parent.current_child]
-        for k,v in self.final_breakdown:
+        for k in self.final_breakdown:
             if k in self.parent.final_breakdown:
-                self.parent.final_breakdown[k] += v * prob
+                self.parent.final_breakdown[k] += self.final_breakdown[k] * prob
             else:
-                self.parent.final_breakdown[k] = v * prob
+                self.parent.final_breakdown[k] = self.final_breakdown[k] * prob
     
     def add_breakdown_to_state_final(self):
         pass

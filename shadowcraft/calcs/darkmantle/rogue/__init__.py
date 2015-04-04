@@ -146,6 +146,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
                 p = current_node.parent
                 current_node = p
                 current_node.kill_last_child()
+        print "total nodes:", l 
 
         return breakdown
     

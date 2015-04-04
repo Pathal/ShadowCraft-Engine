@@ -118,5 +118,5 @@ def pretty_print(dict_list, total_sum = 1., show_percent=False):
         print '-' * (max_len + 15)
 
 pretty_print([dps_breakdown], total_sum=total_dps, show_percent=True)
-print ' ' * (max_length([dps_breakdown]) + 1), total_dps, _("total damage per second.")
+print ' ' * (max_length([dps_breakdown]) + 1), total_dps, _("Average Total Damage")
 print "Request time: %s sec" % (time.time() - start)

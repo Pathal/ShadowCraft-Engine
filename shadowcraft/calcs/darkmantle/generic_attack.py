@@ -40,6 +40,7 @@ class GenericAttack(GenericEvent):
     
     def try_to_populate(self):
         if self.engine.end_calc_branch(self.time, self.total_damage):
+            self.final_breakdown = self.breakdown
             return
         if self.children != None:
             return
