@@ -11,6 +11,7 @@ from shadowcraft.objects import proc_data
 
 class GenericEvent(object):
     _can_crit = False
+    _cost = 0
     _can_multistrike = False
     
     def __init__(self, engine, breakdown, time, timeline, total_damage, state_values, parent):

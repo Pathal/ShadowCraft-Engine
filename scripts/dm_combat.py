@@ -85,7 +85,7 @@ test_glyphs = glyphs.Glyphs(test_class, *glyph_list)
 
 # Set up settings.
 test_cycle = settings.CombatCycle()
-test_settings = settings.Settings(test_cycle, response_time=.5, latency=.03, merge_damage=True, style='time', limit=10)
+test_settings = settings.Settings(test_cycle, response_time=.5, latency=.03, merge_damage=True, style='time', limit=300)
 
 # Build a DPS object.
 calculator = RogueDarkmantleCalculator(test_stats, test_talents, test_glyphs, test_buffs, test_race, test_settings, test_level)

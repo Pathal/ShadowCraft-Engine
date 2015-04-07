@@ -2,6 +2,8 @@ from copy import deepcopy
 import gettext
 import __builtin__
 import math
+from __builtin__ import False
+from Carbon.Aliases import false
 
 __builtin__._ = gettext.gettext
 
@@ -38,8 +40,13 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         return self.ability_constructors[name]
     
     def can_cast_ability(self, name):
-        if abilities_list._cost < self.state_values['current_power'] and self.state_values['cooldown'][name] < self.time:
-            return True
+        if abilities_list[name]._cost > self.state_values['current_power']:
+            return False
+        if abilities_list[name]._cost_secondary > self.state_values['current_second_power']:
+            return False
+        if abilities_list[name]._required_stances is not None:
+            if self.state_values['stance'] in abilities_list[name]._required_stances:
+                return False
         return False
     
     def _get_values_for_class(self):
@@ -52,6 +59,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         class_table = {}
         class_table['current_second_power'] = 0 #combo points
         class_table['max_second_power'] = 5 #can only get to 5 CP (for now?)
+        
         
         class_table['max_power'] = 100 #energy
         if self.settings.is_assassination_rogue():
@@ -122,9 +130,8 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         event_queue = [(0.0, 'mh_autoattack', False), (0.01, 'oh_autoattack', False)] #temporary for development purposes
         #self.combat_priority_list() #should determine opener, as well as handle normal rotational decisions
         first_event = event_queue.pop(0)
-        current_node = self.get_next_attack(first_event[1])(self, deepcopy(breakdown), deepcopy(time), deepcopy(event_queue),
-                                                            deepcopy(total_damage), deepcopy(self.state_values), None)
-        
+        current_node = self.get_next_attack(first_event[1])(self, breakdown, time, event_queue, total_damage, self.state_values, None)
+                
         l=0
         while True:
             l += 1

@@ -21,6 +21,8 @@ class GenericAttack(GenericEvent):
     _stance = None #the stance(s) required
     _cost_secondary = 0
     _cast_time = 0.0
+    _required_stances = None #otherwise, use an array
+    
     
     #def __init__(self, engine, breakdown, time, timeline, total_damage, state_values, parent):
     #    super(GenericEvent, self).__init__(engine, breakdown, time, timeline, total_damage, state_values, parent)
@@ -29,7 +31,7 @@ class GenericAttack(GenericEvent):
         return 1 #to be overwritten by actual actions
     
     def secondary_effects(self):
-        return
+        return #to be overwritten
     
     def add_damage_to_breakdown(self, damage, breakdown):
         if self._name in breakdown:
@@ -44,10 +46,14 @@ class GenericAttack(GenericEvent):
             return
         if self.children != None:
             return
+        self.child_populate()
+        
+    def crit_populate(self):
+        #sample child populator method, crits matter here
         #b0 = deepcopy(self.breakdown) #miss
         next_event = self.timeline[0]
         self.timeline = self.timeline[1:]
-        self.timeline.append((self.time + self.engine.stats.mh.speed, self._name, False))
+        self.secondary_effects()
         
         d1 = self.calculate_damage()
         b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown)) #normal
@@ -61,6 +67,41 @@ class GenericAttack(GenericEvent):
         
         self.children = [o1, o2]
         self.probabilities = [.8, .2] #the likelihood of the corrosponding child occuring
+        
+    def child_populate(self):
+        #this is a basic child populator method. crits, nor multistrikes, matter with this method.
+        #b0 = deepcopy(self.breakdown) #miss
+        next_event = self.timeline[0]
+        self.timeline = self.timeline[1:]
+        
+        #basic functionality
+        regen = self.state_values['base_power_regen'] * self.engine.stats.get_haste_multiplier_from_rating(rating=self.state_values['current_stats']['haste'])
+        regen *= (self.time - self.state_values['last_event'])
+        self.state_values['current_power'] += regen
+        self.state_values['current_power'] = min(self.state_values['current_power'], self.state_values['max_power'])
+        self.state_values['current_power'] -= self._cost
+        self.state_values['current_second_power'] -= self._cost_secondary
+        
+        self.secondary_effects()
+        self.state_values['last_event'] = self.time
+          
+        #rating=self.stat_values['current_stats']['crit'] is_day=self.engine.settings.is_day
+        crit_rate = .15 + self.engine.stats.get_crit_from_rating(rating=self.state_values['current_stats']['crit'])
+        crit_rate += self.engine.buffs.buff_all_crit() + self.engine.race.get_racial_crit()
+        crit_rate -= self.engine.crit_reduction
+        
+        multistrike_rate = self.engine.stats.get_multistrike_chance_from_rating(rating=self.state_values['current_stats']['multistrike'])
+        multistrike_rate += self.engine.buffs.multistrike_bonus()
+        
+        d1 = self.calculate_damage()
+        d1 = (d1 * (1-crit_rate)) + (2.0 * d1 * crit_rate) #dummy 80% chance normal, 20% chance crit for now
+        d1 *= 1 + 2 * multistrike_rate * .3 #multistrike
+        b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown)) #normal
+        t1 = self.total_damage + d1
+        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self)
+        
+        self.children = [o1]
+        self.probabilities = [1.0] #the likelihood of the corrosponding child occuring
         
     
     def bonus_crit_rate(self):

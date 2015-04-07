@@ -37,6 +37,7 @@ class DarkmantleCalculator(object):
         
         #setup global variables, these get deep-copy and passed to new objects
         self.state_values = {}
+        self.state_values['last_event'] = 0
         self.state_values['damage_multiplier'] = 1.0
         self.state_values['gcd_size'] = 1.0
         self.state_values['range'] = 4.0
