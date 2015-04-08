@@ -9,9 +9,12 @@ __builtin__._ = gettext.gettext
 
 import shadowcraft
 from shadowcraft.calcs.darkmantle import DarkmantleCalculator
+from shadowcraft.calcs.darkmantle import apl
 from shadowcraft.calcs.darkmantle.rogue import mh_attack
 from shadowcraft.calcs.darkmantle.rogue import oh_attack
 from shadowcraft.calcs.darkmantle.rogue import instant_poison
+from shadowcraft.calcs.darkmantle.rogue import sinister_strike
+from shadowcraft.calcs.darkmantle.rogue import eviscerate
 from shadowcraft.core import exceptions
 from shadowcraft.objects import procs
 from shadowcraft.objects import proc_data
@@ -23,14 +26,22 @@ class InputNotModeledException(exceptions.InvalidInputException):
 
 class RogueDarkmantleCalculator(DarkmantleCalculator):
     abilities_list = {
-        'mh_autoattack': mh_attack,
-        'oh_autoattack': oh_attack,
-        'instant_poison': instant_poison,
+        'apl': apl.APL(None, {}, 0, [], 0, {}, None),
+        'mh_autoattack': mh_attack.MHAttack(None, {}, 0, [], 0, {}, None),
+        'oh_autoattack': oh_attack.OHAttack(None, {}, 0, [], 0, {}, None),
+        'instant_poison': instant_poison.InstantPoison(None, {}, 0, [], 0, {}, None),
+        
+        'sinister_strike': sinister_strike.SinisterStrike(None, {}, 0, [], 0, {}, None),
+        'eviscerate': eviscerate.Eviscerate(None, {}, 0, [], 0, {}, None),
     }    
     ability_constructors = {
+        'apl': apl.APL,
         'mh_autoattack': mh_attack.MHAttack,
         'oh_autoattack': oh_attack.OHAttack,
         'instant_poison': instant_poison.InstantPoison,
+        
+        'sinister_strike': sinister_strike.SinisterStrike,
+        'eviscerate': eviscerate.Eviscerate,
     }
     
     def get_next_attack(self, name):
@@ -40,12 +51,13 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         return self.ability_constructors[name]
     
     def can_cast_ability(self, name):
-        if abilities_list[name]._cost > self.state_values['current_power']:
+        action = self.abilities_list[name] #converts a string to an object with stats
+        if action._cost > self.state_values['current_power']:
             return False
-        if abilities_list[name]._cost_secondary > self.state_values['current_second_power']:
+        if action._cost_secondary > self.state_values['current_second_power']:
             return False
-        if abilities_list[name]._required_stances is not None:
-            if self.state_values['stance'] in abilities_list[name]._required_stances:
+        if action._required_stances is not None:
+            if self.state_values['stance'] in action._required_stances:
                 return False
         return False
     
@@ -127,7 +139,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         #read priority list, determine first action
         #load event_state object with event_queue
         #              (time, name, multistrike)
-        event_queue = [(0.0, 'mh_autoattack', False), (0.01, 'oh_autoattack', False)] #temporary for development purposes
+        event_queue = [(0.0, 'mh_autoattack', False), (0.0, 'sinister_strike', False), (0.01, 'oh_autoattack', False)] #temporary for development purposes
         #self.combat_priority_list() #should determine opener, as well as handle normal rotational decisions
         first_event = event_queue.pop(0)
         current_node = self.get_next_attack(first_event[1])(self, breakdown, time, event_queue, total_damage, self.state_values, None)

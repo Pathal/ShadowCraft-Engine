@@ -16,6 +16,7 @@ class MHAttack(GenericAttack):
         return self.engine.stats.mh.speed * (self.engine.stats.mh.weapon_dps + self.state_values['effective_ap'] / 3.5)
     
     def secondary_effects(self):
+        #queue up another attack
         swing_timer = self.engine.stats.mh.speed / self.engine.stats.get_haste_multiplier_from_rating(rating=self.state_values['current_stats']['haste'])
         self.insert_event_into_timeline((self.time + swing_timer, self._name, False))
         

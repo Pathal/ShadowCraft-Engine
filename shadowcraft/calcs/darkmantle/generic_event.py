@@ -13,6 +13,12 @@ class GenericEvent(object):
     _can_crit = False
     _cost = 0
     _can_multistrike = False
+    _multistrike_delay = .3
+    _cost = 0
+    _stance = None #the stance(s) required
+    _cost_secondary = 0
+    _cast_time = 0.0
+    _required_stances = None
     
     def __init__(self, engine, breakdown, time, timeline, total_damage, state_values, parent):
         self.engine = engine
@@ -29,6 +35,16 @@ class GenericEvent(object):
         
     def try_to_populate(self):
         pass
+    
+    def update_power_regen(self):
+        regen = self.state_values['base_power_regen'] * self.engine.stats.get_haste_multiplier_from_rating(rating=self.state_values['current_stats']['haste'])
+        regen *= (self.time - self.state_values['last_event'])
+        self.state_values['current_power'] += regen
+        self.state_values['current_power'] = min(self.state_values['current_power'], self.state_values['max_power'])
+        self.state_values['current_power'] -= self._cost
+        self.state_values['current_second_power'] -= self._cost_secondary
+        
+        self.state_values['last_event'] = self.time
     
     def send_data_to_parent(self):
         prob = self.parent.probabilities[self.parent.current_child]
