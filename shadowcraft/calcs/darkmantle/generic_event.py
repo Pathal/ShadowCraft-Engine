@@ -53,6 +53,18 @@ class GenericEvent(object):
     def can_cast(self, state):
         return True
     
+    def insert_event_into_timeline(self, event):
+        #event is a tuple of (time, name, extra)
+        if len(self.timeline) == 0:
+            self.timeline.append(event)
+        if event[0] < self.timeline[0][0]:
+            self.timeline.insert(0, event)
+        if event[0] > self.timeline[len(self.timeline)-1][0]:
+            self.timeline.append(event)
+        for i in xrange(len(self.timeline)): #from 0 to len()-1
+            if self.timeline[i-1][0] < event[0] and event[0] <= self.timeline[i][0]:
+                self.timeline.insert(i+1, event)
+    
     def is_done(self):
         if self.current_child == len(self.children)-1:
             return True

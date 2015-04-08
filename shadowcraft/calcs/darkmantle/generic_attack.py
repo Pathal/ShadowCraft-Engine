@@ -40,7 +40,14 @@ class GenericAttack(GenericEvent):
             breakdown[self._name] = damage
         return breakdown
     
+    def add_procs_for_hand(self):
+        if self._hand == 'mh':
+            'add mh and both hand procs'
+        elif self._hand == 'oh':
+            'add oh and both hand procs'
+    
     def try_to_populate(self):
+        #forks into a separate method to reduce having to rewrite core logic
         if self.engine.end_calc_branch(self.time, self.total_damage):
             self.final_breakdown = self.breakdown
             return
@@ -109,11 +116,4 @@ class GenericAttack(GenericEvent):
     
     def bonus_crit_damage(self):
         return 0
-    
-    def can_cast(self, state):
-        if state['current_power'] < _cost:
-            return False
-        if state['stance'] not in _stance or _stance is None:
-            return False
-        return True
     

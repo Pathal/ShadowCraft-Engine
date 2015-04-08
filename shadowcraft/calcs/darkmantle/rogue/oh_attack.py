@@ -16,5 +16,5 @@ class OHAttack(GenericAttack):
         return self.engine.stats.oh.speed * (self.engine.stats.oh.weapon_dps + self.state_values['effective_ap'] / 3.5) * .5
     
     def secondary_effects(self):
-        self.timeline.append((self.time + self.engine.stats.oh.speed, self._name, False))
-        
+        swing_timer = self.engine.stats.oh.speed / self.engine.stats.get_haste_multiplier_from_rating(rating=self.state_values['current_stats']['haste'])
+        self.insert_event_into_timeline((self.time + swing_timer, self._name, False))
