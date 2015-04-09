@@ -21,6 +21,3 @@ class Eviscerate(GenericAttack):
         self.state_values['current_second_power'] = self.state_values['anticipation']
         self.state_values['anticipation'] = 0
     
-    def setup_queues(self, timeline, buffs):
-        #enable_autoattacks()
-        timeline.append((self.time + self.state_values['gcd_size'], 'priority_queue'))

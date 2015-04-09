@@ -26,13 +26,13 @@ class InputNotModeledException(exceptions.InvalidInputException):
 
 class RogueDarkmantleCalculator(DarkmantleCalculator):
     abilities_list = {
-        'apl': apl.APL(None, {}, 0, [], 0, {}, None),
-        'mh_autoattack': mh_attack.MHAttack(None, {}, 0, [], 0, {}, None),
-        'oh_autoattack': oh_attack.OHAttack(None, {}, 0, [], 0, {}, None),
-        'instant_poison': instant_poison.InstantPoison(None, {}, 0, [], 0, {}, None),
+        'apl':                         apl.APL(None, {}, 0, [], 0, {}, None),
+        'mh_autoattack':         mh_attack.MHAttack(None, {}, 0, [], 0, {}, None),
+        'oh_autoattack':         oh_attack.OHAttack(None, {}, 0, [], 0, {}, None),
+        'instant_poison':   instant_poison.InstantPoison(None, {}, 0, [], 0, {}, None),
         
         'sinister_strike': sinister_strike.SinisterStrike(None, {}, 0, [], 0, {}, None),
-        'eviscerate': eviscerate.Eviscerate(None, {}, 0, [], 0, {}, None),
+        'eviscerate':           eviscerate.Eviscerate(None, {}, 0, [], 0, {}, None),
     }    
     ability_constructors = {
         'apl': apl.APL,
@@ -50,14 +50,14 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
             raise InputNotModeledException(_('Can\'t locate action: {action}').format(action=str(name)))
         return self.ability_constructors[name]
     
-    def can_cast_ability(self, name):
+    def can_cast_ability(self, name, state):
         action = self.abilities_list[name] #converts a string to an object with stats
-        if action._cost > self.state_values['current_power']:
+        if action._cost > state['current_power']:
             return False
-        if action._cost_secondary > self.state_values['current_second_power']:
+        if action._cost_secondary > state['current_second_power']:
             return False
         if action._required_stances is not None:
-            if self.state_values['stance'] in action._required_stances:
+            if state['stance'] in action._required_stances:
                 return False
         return True
     
@@ -149,7 +149,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
             #print l
             if l % 1000 == 0:
                 print "iteration ", l
-            print current_node._name, current_node.timeline
+            #print current_node._name, current_node.timeline
             current_node.try_to_populate()
             
             if current_node.has_next_child():

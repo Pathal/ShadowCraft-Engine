@@ -52,10 +52,10 @@ class APL(GenericEvent):
         self.probabilities = [1.0]
     
     def spec_apl(self):
-        if self.engine.can_cast_ability('sinister_strike'):
+        if self.engine.can_cast_ability('sinister_strike', self.state_values):
             if self.state_values['current_second_power'] < self.state_values['max_second_power']:
                 return 'sinister_strike'
-        if self.engine.can_cast_ability('eviscerate'):
+        if self.engine.can_cast_ability('eviscerate', self.state_values):
             if self.state_values['current_second_power'] == self.state_values['max_second_power']:
                 return 'eviscerate'
         return 'wait'
