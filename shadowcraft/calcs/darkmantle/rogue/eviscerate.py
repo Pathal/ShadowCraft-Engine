@@ -13,12 +13,11 @@ class Eviscerate(GenericAttack):
     
     def calculate_damage(self):
         # non-normalized weapon strike => (mh_weapon_damage + ap / 3.5 * weapon_speed) * weapon_damage_percentage
-        print 'Eviscerate: ', self.state_values['current_second_power']
-        return .3 * self.state_values['current_second_power'] * self.state_values['effective_ap']
+        return .3 * self.cps * self.state_values['effective_ap']
     
     def secondary_effects(self):
-        self.engine.restless_blades_impact(self.state_values['current_second_power'])
         #shift combo points, clean up residuals
+        self.cps = self.state_values['current_second_power']
         self.state_values['current_second_power'] = self.state_values['anticipation']
         self.state_values['anticipation'] = 0
     

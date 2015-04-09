@@ -16,6 +16,7 @@ class GenericEvent(object):
     _can_multistrike = False
     _multistrike_delay = .3
     _cost = 0
+    _gcd_size = 1.0
     _stance = None #the stance(s) required
     _cost_secondary = 0
     _cast_time = 0.0
@@ -81,7 +82,7 @@ class GenericEvent(object):
         else:
             for i in xrange(len(self.timeline)): #from 0 to len()-1
                 if self.timeline[i-1][0] < event[0] and event[0] <= self.timeline[i][0]:
-                    self.timeline.insert(i+1, event)
+                    self.timeline.insert(i, event)
     
     def is_done(self):
         if self.current_child == len(self.children)-1:

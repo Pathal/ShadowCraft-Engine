@@ -59,7 +59,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         if action._required_stances is not None:
             if self.state_values['stance'] in action._required_stances:
                 return False
-        return False
+        return True
     
     def _get_values_for_class(self):
         #override global states if necessary
@@ -87,9 +87,8 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         if self.settings.is_combat_rogue():
             class_table['base_power_regen'] *= 1.2
         
-        if self.talents.anticipation:
-            class_table['anticipation'] = 0
-            class_table['anticipation_max'] = 5
+        class_table['anticipation'] = 0
+        class_table['anticipation_max'] = 5
         if self.settings.is_combat_rogue():
             class_table['bg_counter'] = 0
         
@@ -139,7 +138,7 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         #read priority list, determine first action
         #load event_state object with event_queue
         #              (time, name, multistrike)
-        event_queue = [(0.0, 'mh_autoattack', False), (0.0, 'sinister_strike', False), (0.01, 'oh_autoattack', False)] #temporary for development purposes
+        event_queue = [(0.0, 'mh_autoattack', False), (0.0, 'apl', False), (0.01, 'oh_autoattack', False)] #temporary for development purposes
         #self.combat_priority_list() #should determine opener, as well as handle normal rotational decisions
         first_event = event_queue.pop(0)
         current_node = self.get_next_attack(first_event[1])(self, breakdown, time, event_queue, total_damage, self.state_values, None)

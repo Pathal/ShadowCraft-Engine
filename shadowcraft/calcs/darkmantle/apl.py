@@ -11,6 +11,8 @@ from shadowcraft.objects import procs
 from shadowcraft.objects import proc_data
 
 class APL(GenericEvent):
+    _name = 'apl'
+    
     def try_to_populate(self):
         #forks into a separate method to reduce having to rewrite core logic
         if self.engine.end_calc_branch(self.time, self.total_damage):
@@ -39,10 +41,9 @@ class APL(GenericEvent):
             
             n = (t, a, False)
             self.insert_event_into_timeline(n)
-
         
         
-        next_event = self.timeline.pop()
+        next_event = self.timeline.pop(0)
         
         o1 = self.engine.get_next_attack(next_event[1])(self.engine, self.breakdown, next_event[0],
                                                         self.timeline, self.total_damage, self.state_values, self)
@@ -51,11 +52,10 @@ class APL(GenericEvent):
         self.probabilities = [1.0]
     
     def spec_apl(self):
-        return 'wait'
         if self.engine.can_cast_ability('sinister_strike'):
-            if self.state_values['current_energy'] > 50 and self.state_values['combo_points'] < self.state_values['max_second_power']:
+            if self.state_values['current_second_power'] < self.state_values['max_second_power']:
                 return 'sinister_strike'
         if self.engine.can_cast_ability('eviscerate'):
-            if self.state_values['current_energy'] > 35 and self.state_values['combo_points'] == self.state_values['max_second_power']:
+            if self.state_values['current_second_power'] == self.state_values['max_second_power']:
                 return 'eviscerate'
         return 'wait'

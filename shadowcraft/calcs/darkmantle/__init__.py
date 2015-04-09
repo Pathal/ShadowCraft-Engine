@@ -103,15 +103,6 @@ class DarkmantleCalculator(object):
             return True
         return False
     
-    def add_event_to_queue(self, event, queue):
-        if event[0] < queue[0][0]:
-            queue.insert(0, event)
-        if event[0] > queue[len(queue)][0]:
-            queue.append(event)
-        for i in xrange(len(queue)): #from 0 to len()-1
-            if queue[i][0] <= event[0] and event[0] < queue[i+1][0]:
-                queue.insert(i+1, event)
-    
     def _class_bonus_crit(self):
         return 0 #should be overwritten by individual class modules if the crit rate needs to be shifted
     
