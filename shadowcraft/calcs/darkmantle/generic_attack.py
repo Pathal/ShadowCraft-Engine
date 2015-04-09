@@ -59,7 +59,7 @@ class GenericAttack(GenericEvent):
     def child_populate(self):
         #this is a basic child populator method. crits, nor multistrikes, matter with this method.
         #b0 = deepcopy(self.breakdown) #miss
-        next_event = self.timeline.pop()
+        next_event = self.timeline.pop(0)
         
         #basic functionality
         self.update_power_regen()

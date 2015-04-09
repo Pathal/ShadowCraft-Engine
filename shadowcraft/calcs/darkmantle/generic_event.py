@@ -10,6 +10,7 @@ from shadowcraft.objects import procs
 from shadowcraft.objects import proc_data
 
 class GenericEvent(object):
+    _name = 'event'
     _can_crit = False
     _cost = 0
     _can_multistrike = False
@@ -73,13 +74,14 @@ class GenericEvent(object):
         #event is a tuple of (time, name, extra)
         if len(self.timeline) == 0:
             self.timeline.append(event)
-        if event[0] < self.timeline[0][0]:
+        elif event[0] < self.timeline[0][0]:
             self.timeline.insert(0, event)
-        if event[0] > self.timeline[len(self.timeline)-1][0]:
+        elif event[0] > self.timeline[len(self.timeline)-1][0]:
             self.timeline.append(event)
-        for i in xrange(len(self.timeline)): #from 0 to len()-1
-            if self.timeline[i-1][0] < event[0] and event[0] <= self.timeline[i][0]:
-                self.timeline.insert(i+1, event)
+        else:
+            for i in xrange(len(self.timeline)): #from 0 to len()-1
+                if self.timeline[i-1][0] < event[0] and event[0] <= self.timeline[i][0]:
+                    self.timeline.insert(i+1, event)
     
     def is_done(self):
         if self.current_child == len(self.children)-1:

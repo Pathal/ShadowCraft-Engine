@@ -17,4 +17,4 @@ class SinisterStrike(GenericAttack):
     
     def secondary_effects(self):
         #Added CP, RvS procs can be done as a separate event
-        self.state_values['current_second_power'] = math.min(self.state_values['current_second_power']+1, self.state_values['max_second_power'])
+        self.state_values['current_second_power'] = min(self.state_values['current_second_power']+1, self.state_values['max_second_power'])

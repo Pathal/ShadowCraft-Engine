@@ -147,8 +147,10 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
         l=0
         while True:
             l += 1
+            #print l
             if l % 1000 == 0:
                 print "iteration ", l
+            print current_node._name, current_node.timeline
             current_node.try_to_populate()
             
             if current_node.has_next_child():
