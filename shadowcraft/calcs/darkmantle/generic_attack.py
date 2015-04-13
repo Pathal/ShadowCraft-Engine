@@ -41,11 +41,9 @@ class GenericAttack(GenericEvent):
             breakdown[self._name] = damage
         return breakdown
     
-    def add_procs_for_hand(self):
-        if self._hand == 'mh':
-            'add mh and both hand procs'
-        elif self._hand == 'oh':
-            'add oh and both hand procs'
+    def queue_up_procs(self):
+        lst = self.engine.get_procs_for_hand(self._hand)
+        
     
     def try_to_populate(self):
         #forks into a separate method to reduce having to rewrite core logic
@@ -64,6 +62,7 @@ class GenericAttack(GenericEvent):
         #basic functionality
         self.update_power_regen()
         self.secondary_effects()
+        self.queue_up_procs()
         
         #rating=self.stat_values['current_stats']['crit'] is_day=self.engine.settings.is_day
         crit_rate = .15 + self.engine.stats.get_crit_from_rating(rating=self.state_values['current_stats']['crit'])
@@ -74,11 +73,11 @@ class GenericAttack(GenericEvent):
         multistrike_rate += self.engine.buffs.multistrike_bonus()
         
         d1 = self.calculate_damage()
-        d1 = (d1 * (1-crit_rate)) + (2.0 * d1 * crit_rate) #dummy 80% chance normal, 20% chance crit for now
-        d1 *= 1 + 2 * multistrike_rate * .3 #multistrike
-        b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown)) #normal
+        d1 = (d1 * (1-crit_rate)) + (2.0 * d1 * crit_rate)
+        d1 *= 1 + 2 * multistrike_rate * .3
+        b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown))
         t1 = self.total_damage + d1
-        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self)
+        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self, extra=next_event[2])
         
         self.children = [o1]
         self.probabilities = [1.0] #the likelihood of the corrosponding child occuring

@@ -17,6 +17,7 @@ class Eviscerate(GenericAttack):
     
     def secondary_effects(self):
         #shift combo points, clean up residuals
+        #saves the number of CPs to an attribute because secondary effects is run before damage calcs
         self.cps = self.state_values['current_second_power']
         self.state_values['current_second_power'] = self.state_values['anticipation']
         self.state_values['anticipation'] = 0

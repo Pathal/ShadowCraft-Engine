@@ -10,11 +10,16 @@ __builtin__._ = gettext.gettext
 import shadowcraft
 from shadowcraft.calcs.darkmantle import DarkmantleCalculator
 from shadowcraft.calcs.darkmantle import apl
+from shadowcraft.calcs.darkmantle import remove_aura
 from shadowcraft.calcs.darkmantle.rogue import mh_attack
 from shadowcraft.calcs.darkmantle.rogue import oh_attack
+from shadowcraft.calcs.darkmantle.rogue import swift_poison
+
 from shadowcraft.calcs.darkmantle.rogue import instant_poison
 from shadowcraft.calcs.darkmantle.rogue import sinister_strike
+from shadowcraft.calcs.darkmantle.rogue import revealing_strike
 from shadowcraft.calcs.darkmantle.rogue import eviscerate
+
 from shadowcraft.core import exceptions
 from shadowcraft.objects import procs
 from shadowcraft.objects import proc_data
@@ -26,21 +31,25 @@ class InputNotModeledException(exceptions.InvalidInputException):
 
 class RogueDarkmantleCalculator(DarkmantleCalculator):
     abilities_list = {
-        'apl':                         apl.APL(None, {}, 0, [], 0, {}, None),
-        'mh_autoattack':         mh_attack.MHAttack(None, {}, 0, [], 0, {}, None),
-        'oh_autoattack':         oh_attack.OHAttack(None, {}, 0, [], 0, {}, None),
-        'instant_poison':   instant_poison.InstantPoison(None, {}, 0, [], 0, {}, None),
+        'apl':                          apl.APL(None, {}, 0, [], 0, {}, None),
+        'remove_aura':          remove_aura.RemoveAura(None, {}, 0, [], 0, {}, None),
+        'mh_autoattack':          mh_attack.MHAttack(None, {}, 0, [], 0, {}, None),
+        'oh_autoattack':          oh_attack.OHAttack(None, {}, 0, [], 0, {}, None),
+        'swift_poison':        swift_poison.SwiftPoison(None, {}, 0, [], 0, {}, None),
         
-        'sinister_strike': sinister_strike.SinisterStrike(None, {}, 0, [], 0, {}, None),
-        'eviscerate':           eviscerate.Eviscerate(None, {}, 0, [], 0, {}, None),
+        'sinister_strike':   sinister_strike.SinisterStrike(None, {}, 0, [], 0, {}, None),
+        'revealing_strike': revealing_strike.RevealingStrike(None, {}, 0, [], 0, {}, None),
+        'eviscerate':             eviscerate.Eviscerate(None, {}, 0, [], 0, {}, None),
     }    
     ability_constructors = {
         'apl': apl.APL,
+        'remove_aura': remove_aura.RemoveAura,
         'mh_autoattack': mh_attack.MHAttack,
         'oh_autoattack': oh_attack.OHAttack,
-        'instant_poison': instant_poison.InstantPoison,
+        'swift_poison': swift_poison.SwiftPoison,
         
         'sinister_strike': sinister_strike.SinisterStrike,
+        'revealing_strike': revealing_strike.RevealingStrike,
         'eviscerate': eviscerate.Eviscerate,
     }
     
@@ -149,7 +158,9 @@ class RogueDarkmantleCalculator(DarkmantleCalculator):
             #print l
             if l % 1000 == 0:
                 print "iteration ", l
-            #print current_node._name, current_node.timeline
+            #print ''
+            #print current_node._name, current_node.time, current_node.timeline
+            #print current_node.final_breakdown
             current_node.try_to_populate()
             
             if current_node.has_next_child():

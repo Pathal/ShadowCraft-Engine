@@ -2,6 +2,7 @@ from copy import deepcopy
 import gettext
 import __builtin__
 import math
+from __builtin__ import False
 
 __builtin__._ = gettext.gettext
 
@@ -22,13 +23,14 @@ class GenericEvent(object):
     _cast_time = 0.0
     _required_stances = None
     
-    def __init__(self, engine, breakdown, time, timeline, total_damage, state_values, parent):
+    def __init__(self, engine, breakdown, time, timeline, total_damage, state_values, parent, extra=None):
         self.engine = engine
         self.breakdown = deepcopy(breakdown)
         self.time = deepcopy(time)
         self.timeline = deepcopy(timeline)
         self.total_damage = deepcopy(total_damage)
         self.state_values = deepcopy(state_values)
+        self.extra = extra
         self.parent = parent
         self.children = None
         self.probabilities = None
@@ -83,6 +85,24 @@ class GenericEvent(object):
             for i in xrange(len(self.timeline)): #from 0 to len()-1
                 if self.timeline[i-1][0] < event[0] and event[0] <= self.timeline[i][0]:
                     self.timeline.insert(i, event)
+                    
+    def timeline_contains(self, name):
+        for e in self.timeline:
+            if e[1] == name:
+                return True
+        return False
+    
+    def remove_first_occurance(self, name):
+        for i in xrange(0, len(self.timeline)):
+            if self.timeline[i][1] == name:
+                e = self.timeline.pop(i) #discard the return
+                return e[0] - self.time
+    
+    def remove_first_aura_occurance(self, name):
+        for i in xrange(0, len(self.timeline)):
+            if self.timeline[i][2] == name:
+                e = self.timeline.pop(i) #discard the return
+                return e[0] - self.time
     
     def is_done(self):
         if self.current_child == len(self.children)-1:

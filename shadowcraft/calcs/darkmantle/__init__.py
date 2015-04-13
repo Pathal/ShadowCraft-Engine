@@ -70,7 +70,7 @@ class DarkmantleCalculator(object):
 
         self.state_values['auras'] = [] #handles permanent and temporary
         for e in self.buffs.buffs_debuffs:
-            self.state_values['auras'].append((e, 'inf')) # ('name', time), time = 'inf' or number
+            self.state_values['auras'].append(e)
             
         #change stats to match buffs
         
