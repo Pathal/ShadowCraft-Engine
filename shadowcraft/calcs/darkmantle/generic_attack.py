@@ -32,7 +32,9 @@ class GenericAttack(GenericEvent):
         return 1 #to be overwritten by actual actions
     
     def secondary_effects(self):
-        return #to be overwritten
+        #to be overwritten
+        #used for setting up data, and reusing inherited child generators.
+        return
     
     def add_damage_to_breakdown(self, damage, breakdown):
         if self._name in breakdown:
@@ -40,19 +42,6 @@ class GenericAttack(GenericEvent):
         else:
             breakdown[self._name] = damage
         return breakdown
-    
-    def queue_up_procs(self):
-        lst = self.engine.get_procs_for_hand(self._hand)
-        
-    
-    def try_to_populate(self):
-        #forks into a separate method to reduce having to rewrite core logic
-        if self.engine.end_calc_branch(self.time, self.total_damage):
-            self.final_breakdown = self.breakdown
-            return
-        if self.children != None:
-            return
-        self.child_populate()
         
     def child_populate(self):
         #this is a basic child populator method. crits, nor multistrikes, matter with this method.
@@ -77,15 +66,9 @@ class GenericAttack(GenericEvent):
         d1 *= 1 + 2 * multistrike_rate * .3
         b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown))
         t1 = self.total_damage + d1
-        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self, extra=next_event[2])
+        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, deepcopy(self.state_values), self, next_event[2])
         
         self.children = [o1]
         self.probabilities = [1.0] #the likelihood of the corrosponding child occuring
-        
     
-    def bonus_crit_rate(self):
-        return 0
-    
-    def bonus_crit_damage(self):
-        return 0
     

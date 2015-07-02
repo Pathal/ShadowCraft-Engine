@@ -17,14 +17,15 @@ class RevealingStrike(GenericAttack):
     
     def secondary_effects(self):
         self.state_values['current_second_power'] = min(self.state_values['current_second_power']+1, self.state_values['max_second_power'])
+                
         if 'revealing_strike' not in self.state_values['auras']:
             #if it's not there, add it
             self.state_values['auras'].append('revealing_strike')
         
-        t = self.remove_first_aura_occurance('revealing_strike')
+        t = self.engine.remove_first_aura_occurance(self, 'revealing_strike') #removes the aura removal event
         
         if t == None:
             t = 24
         else:
             t = min(t+24, 1.3*24)
-        self.insert_event_into_timeline((self.time + t, 'remove_aura', 'revealing_strike'))
+        self.engine.insert_event_into_timeline(self, (self.time + t, 'remove_aura', 'revealing_strike'))

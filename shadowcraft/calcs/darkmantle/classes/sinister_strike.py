@@ -15,14 +15,10 @@ class SinisterStrike(GenericAttack):
         # non-normalized weapon strike => (mh_weapon_damage + ap / 3.5 * weapon_speed) * weapon_damage_percentage
         return 1.2 * .85 * self.engine.stats.mh.speed * (self.engine.stats.mh.weapon_dps + self.state_values['effective_ap'] / 3.5)
     
-    def secondary_effects(self):
-        #Added CP, RvS procs can be done as a separate event
-        self.state_values['current_second_power'] = min(self.state_values['current_second_power']+1, self.state_values['max_second_power'])
-        
     def child_populate(self):
         #this is a basic child populator method. crits, nor multistrikes, matter with this method.
         #b0 = deepcopy(self.breakdown) #miss
-        self.insert_event_into_timeline((self.time, 'swift_poison', False))
+        self.engine.insert_event_into_timeline(self, (self.time, 'swift_poison', False))
         next_event = self.timeline.pop(0)
         
         #basic functionality
@@ -45,7 +41,7 @@ class SinisterStrike(GenericAttack):
         d1 *= 1 + 2 * multistrike_rate * .3
         b1 = self.add_damage_to_breakdown(d1, deepcopy(self.breakdown))
         t1 = self.total_damage + d1
-        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self, extra=next_event[2])
+        o1 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, deepcopy(self.state_values), self, next_event[2])
         
         self.children = [o1]
         self.probabilities = [1.0] #the likelihood of the corrosponding child occuring
@@ -58,7 +54,7 @@ class SinisterStrike(GenericAttack):
             
             #can get away with cp reusage because it was cloned earlier
             self.state_values['current_second_power'] = min(self.state_values['current_second_power']+1, self.state_values['max_second_power'])
-            o2 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, self.state_values, self, extra=next_event[2])
+            o2 = self.engine.get_next_attack(next_event[1])(self.engine, b1, next_event[0], self.timeline, t1, deepcopy(self.state_values), self, next_event[2])
             self.children.append(o2)
             self.probabilities = [1-c, c]
             

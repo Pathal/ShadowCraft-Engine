@@ -6,7 +6,7 @@ setup(
     version='0.1',
     packages=['shadowcraft',
         'shadowcraft.calcs', 'shadowcraft.calcs.rogue', 'shadowcraft.calcs.rogue.Aldriana',
-        'shadowcraft.calcs.darkmantle', 'shadowcraft.calcs.darkmantle.rogue',
+        'shadowcraft.calcs.darkmantle', 'shadowcraft.calcs.darkmantle.classes',
         'shadowcraft.core',
         'shadowcraft.objects'],
     license='LGPL',

@@ -18,4 +18,4 @@ class OHAttack(GenericAttack):
     def secondary_effects(self):
         #queue up another attack
         swing_timer = self.engine.stats.oh.speed / self.engine.stats.get_haste_multiplier_from_rating(rating=self.state_values['current_stats']['haste'])
-        self.insert_event_into_timeline((self.time + swing_timer, self._name, False))
+        self.engine.insert_event_into_timeline(self, (self.time + swing_timer, self._name, False))

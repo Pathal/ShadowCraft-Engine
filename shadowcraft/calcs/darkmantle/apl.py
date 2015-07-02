@@ -32,21 +32,21 @@ class APL(GenericEvent):
             t = self.time + self.engine.settings.latency
             
             n = (t, a, False)
-            self.insert_event_into_timeline(n)
+            self.engine.insert_event_into_timeline(self, n)
             
-            self.insert_event_into_timeline((self.time + self.engine.settings.latency + self._gcd_size, 'apl', None))
+            self.engine.insert_event_into_timeline(self, (self.time + self._gcd_size, 'apl', None))
         else:
             a = 'apl'
             t = self.time + self.engine.settings.apl_cd #apl_cd is just the interval of how often to check when there's nothing to do
             
             n = (t, a, False)
-            self.insert_event_into_timeline(n)
+            self.engine.insert_event_into_timeline(self, n)
         
         
         next_event = self.timeline.pop(0)
         
         o1 = self.engine.get_next_attack(next_event[1])(self.engine, self.breakdown, next_event[0],
-                                                        self.timeline, self.total_damage, self.state_values, self)
+                                                        self.timeline, self.total_damage, self.state_values, self, next_event[2])
         
         self.children = [o1]
         self.probabilities = [1.0]

@@ -4,7 +4,7 @@ import sys
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '..')))
 
 from shadowcraft.calcs.darkmantle import DarkmantleCalculator
-from shadowcraft.calcs.darkmantle.rogue import RogueDarkmantleCalculator
+from shadowcraft.calcs.darkmantle.classes.rogue import RogueDarkmantleCalculator
 from shadowcraft.calcs.darkmantle import settings
 
 from shadowcraft.objects import buffs
@@ -85,7 +85,7 @@ test_glyphs = glyphs.Glyphs(test_class, *glyph_list)
 
 # Set up settings.
 test_cycle = settings.CombatCycle()
-test_settings = settings.Settings(test_cycle, response_time=.5, latency=.03, merge_damage=True, style='time', limit=60)
+test_settings = settings.Settings(test_cycle, response_time=.5, latency=.03, merge_damage=True, style='time', limit=30)
 
 # Build a DPS object.
 calculator = RogueDarkmantleCalculator(test_stats, test_talents, test_glyphs, test_buffs, test_race, test_settings, test_level)
@@ -117,7 +117,6 @@ def pretty_print(dict_list, total_sum = 1., show_percent=False):
                 print value[0] + ':' + ' ' * (max_len - len(value[0])), str(value[1])
         print '-' * (max_len + 15)
 
-print dps_breakdown
 pretty_print([dps_breakdown], total_sum=total_dps, show_percent=True)
 print ' ' * (max_length([dps_breakdown]) + 1), total_dps, _("Average Total Damage")
 print "Request time: %s sec" % (time.time() - start)

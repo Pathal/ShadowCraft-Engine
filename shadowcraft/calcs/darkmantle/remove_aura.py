@@ -28,12 +28,12 @@ class RemoveAura(GenericEvent):
         next_event = self.timeline.pop(0)
         
         #basic functionality
-        self.update_power_regen()
+        self.update_power_regen(node)
         
-        self.remove_first_aura_occurance(next_event[2])
+        self.engine.remove_first_aura_occurance(self, self.extra)
         
         o1 = self.engine.get_next_attack(next_event[1])(self.engine, self.breakdown, next_event[0], self.timeline,
-                                                        self.total_damage, self.state_values, self, extra=next_event[2])
+                                                        self.total_damage, self.state_values, self, next_event[2])
         
         self.children = [o1]
         self.probabilities = [1.0] #the likelihood of the corrosponding child occuring
